@@ -14,7 +14,7 @@
 /.zed
 /auth.json
 /node_modules
-/public/build
+# /public/build  <- uncommented for Vercel deployment (assets must be committed)
 /public/fonts-manifest.dev.json
 /public/hot
 /public/storage

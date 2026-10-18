@@ -74,6 +74,31 @@ class FinanceSummaryService
     }
 
     /**
+     * Distribusi pemasukan berdasarkan kategori untuk bulan tertentu.
+     */
+    public function getCategoryIncomeDistribution(User $user, ?int $year = null, ?int $month = null): Collection
+    {
+        $year = $year ?? (int) now()->format('Y');
+        $month = $month ?? (int) now()->format('n');
+
+        return $user->transactions()
+            ->with('category')
+            ->income()
+            ->forPeriod($year, $month)
+            ->selectRaw('category_id, SUM(amount) as total_amount, COUNT(*) as count')
+            ->groupBy('category_id')
+            ->orderByDesc('total_amount')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'category_name' => $item->category?->name ?? 'Lainnya',
+                    'total_amount' => (float) $item->total_amount,
+                    'count' => (int) $item->count,
+                ];
+            });
+    }
+
+    /**
      * Data tren 6 bulan terakhir untuk grafik.
      */
     public function getMonthlyTrend(User $user, int $months = 6): array

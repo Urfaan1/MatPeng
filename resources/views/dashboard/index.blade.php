@@ -10,21 +10,15 @@
         <div>
             <div class="flex items-center gap-2">
                 <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
-                    Halo, {{ Auth::user()->name ?? 'Sahabat MatPeng' }}! 👋
+                    Halo, {{ Auth::user()->name }}! 👋
                 </h2>
-                @if($isIllustration)
-                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
-                        <i data-lucide="sparkles" class="w-3 h-3"></i>
-                        Mode Preview
-                    </span>
-                @endif
             </div>
             <p class="text-sm text-slate-500 mt-1">
-                Berikut adalah ringkasan kesehatan finansial Anda untuk periode <span class="font-semibold text-slate-700">{{ $summary['period_label'] }}</span>.
+                Ringkasan kesehatan finansial Anda untuk periode <span class="font-semibold text-slate-700">{{ $summary['period_label'] }}</span>.
             </p>
         </div>
 
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2.5">
             <a href="{{ route('transactions.create') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#123E34] hover:bg-[#1B594B] text-white text-sm font-semibold transition-all shadow-md active:scale-95">
                 <i data-lucide="plus" class="w-4 h-4 stroke-[2.5]"></i>
                 Catat Transaksi
@@ -32,46 +26,41 @@
         </div>
     </div>
 
-    @if($isIllustration)
-        <div class="p-4 rounded-2xl bg-amber-50/90 border border-amber-200 text-amber-900 text-xs md:text-sm flex items-start gap-3 shadow-xs">
-            <i data-lucide="info" class="w-5 h-5 text-amber-600 shrink-0 mt-0.5"></i>
-            <div>
-                <span class="font-bold">Info Tahap 1:</span> Tampilan ini memuat data contoh interaktif untuk memvalidasi tata letak visual, grafik tren, dan responsivitas. Pada Tahap 2 & 3, seluruh data otomatis terhubung secara langsung dengan akun dan database MySQL.
-            </div>
-        </div>
-    @endif
-
     <!-- Financial Summary Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        <!-- Hero Card: Total Saldo -->
-        <div class="md:col-span-2 lg:col-span-2 p-6 rounded-2xl bg-gradient-to-br from-[#123E34] to-[#1e5c4e] text-white shadow-xl shadow-emerald-950/15 relative overflow-hidden flex flex-col justify-between">
-            <div class="absolute -right-8 -bottom-8 w-44 h-44 rounded-full bg-emerald-400/10 blur-2xl pointer-events-none"></div>
+        <!-- Hero Card: Total Saldo Riil -->
+        <div class="md:col-span-2 lg:col-span-2 p-6 rounded-2xl {{ $summary['total_balance'] < 0 ? 'bg-gradient-to-br from-[#7F1D1D] to-[#991B1B] shadow-red-950/20' : 'bg-gradient-to-br from-[#123E34] to-[#1e5c4e] shadow-emerald-950/15' }} text-white shadow-xl relative overflow-hidden flex flex-col justify-between">
+            <div class="absolute -right-8 -bottom-8 w-44 h-44 rounded-full {{ $summary['total_balance'] < 0 ? 'bg-red-400/10' : 'bg-emerald-400/10' }} blur-2xl pointer-events-none"></div>
             
             <div class="flex items-center justify-between mb-4">
-                <span class="text-xs font-semibold uppercase tracking-wider text-emerald-200/90">Total Saldo Terkini</span>
-                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-900/60 text-emerald-200 border border-emerald-700/50 flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    Akumulatif
+                <span class="text-xs font-semibold uppercase tracking-wider {{ $summary['total_balance'] < 0 ? 'text-red-200/90' : 'text-emerald-200/90' }}">
+                    Total Saldo Terkini
+                </span>
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold {{ $summary['total_balance'] < 0 ? 'bg-red-900/80 text-red-100 border border-red-700/60' : 'bg-emerald-900/60 text-emerald-200 border border-emerald-700/50' }} flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full {{ $summary['total_balance'] < 0 ? 'bg-red-300' : 'bg-emerald-400' }} animate-pulse"></span>
+                    {{ $summary['total_balance'] < 0 ? 'Defisit' : 'Akumulatif' }}
                 </span>
             </div>
 
             <div class="my-2">
                 <h3 class="text-3xl md:text-4xl font-extrabold tracking-tight">
-                    Rp {{ number_format($summary['total_balance'], 0, ',', '.') }}
+                    {{ $summary['total_balance'] < 0 ? '-Rp ' . number_format(abs($summary['total_balance']), 0, ',', '.') : 'Rp ' . number_format($summary['total_balance'], 0, ',', '.') }}
                 </h3>
-                <p class="text-xs text-emerald-200/70 mt-1">Saldo riil dihitung dari selisih total pemasukan dan pengeluaran.</p>
+                <p class="text-xs {{ $summary['total_balance'] < 0 ? 'text-red-200/80' : 'text-emerald-200/70' }} mt-1">
+                    {{ $summary['total_balance'] < 0 ? 'Perhatian: Total pengeluaran Anda saat ini melampaui total pemasukan.' : 'Saldo riil dihitung dari selisih total pemasukan dan pengeluaran sepanjang waktu.' }}
+                </p>
             </div>
 
-            <div class="pt-4 mt-2 border-t border-emerald-700/50 grid grid-cols-2 gap-4 text-xs">
+            <div class="pt-4 mt-2 border-t {{ $summary['total_balance'] < 0 ? 'border-red-700/50' : 'border-emerald-700/50' }} grid grid-cols-2 gap-4 text-xs">
                 <div>
-                    <span class="text-emerald-300/80 block">Arus Kas Bulan Ini</span>
+                    <span class="{{ $summary['total_balance'] < 0 ? 'text-red-200/80' : 'text-emerald-300/80' }} block">Arus Kas Bulan Ini</span>
                     <span class="font-bold text-sm text-white">
-                        {{ $summary['net_cash_flow'] >= 0 ? '+' : '' }}Rp {{ number_format($summary['net_cash_flow'], 0, ',', '.') }}
+                        {{ $summary['net_cash_flow'] >= 0 ? '+' : '-' }}Rp {{ number_format(abs($summary['net_cash_flow']), 0, ',', '.') }}
                     </span>
                 </div>
                 <div>
-                    <span class="text-emerald-300/80 block">Total Transaksi Bulan Ini</span>
+                    <span class="{{ $summary['total_balance'] < 0 ? 'text-red-200/80' : 'text-emerald-300/80' }} block">Jumlah Transaksi Bulan Ini</span>
                     <span class="font-bold text-sm text-white">{{ $summary['transaction_count'] }} Transaksi</span>
                 </div>
             </div>
@@ -121,11 +110,11 @@
     <!-- Charts Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Monthly Trend Line/Bar Chart -->
-        <div class="lg:col-span-2 p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
+        <div class="lg:col-span-2 p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col justify-between">
             <div class="flex items-center justify-between mb-5">
                 <div>
                     <h3 class="text-base font-bold text-slate-900">Tren Pemasukan & Pengeluaran</h3>
-                    <p class="text-xs text-slate-400">Perbandingan pemasukan vs pengeluaran 6 bulan terakhir</p>
+                    <p class="text-xs text-slate-400">Perbandingan arus kas 6 bulan terakhir</p>
                 </div>
                 <div class="flex items-center gap-4 text-xs font-medium">
                     <div class="flex items-center gap-1.5">
@@ -138,32 +127,61 @@
                     </div>
                 </div>
             </div>
-            <div class="relative h-64 w-full">
-                <canvas id="trendChart"></canvas>
-            </div>
+
+            @php
+                $hasTrendData = array_sum($trend['income']) > 0 || array_sum($trend['expense']) > 0;
+            @endphp
+
+            @if($hasTrendData)
+                <div class="relative h-64 w-full">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            @else
+                <div class="h-64 flex flex-col items-center justify-center text-center p-6 bg-slate-50/60 rounded-xl border border-dashed border-slate-200">
+                    <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-2">
+                        <i data-lucide="bar-chart-2" class="w-6 h-6 stroke-[1.5]"></i>
+                    </div>
+                    <p class="text-sm font-semibold text-slate-700">Belum ada aktivitas transaksi</p>
+                    <p class="text-xs text-slate-400 max-w-sm mt-1">
+                        Grafik tren akan otomatis muncul seiring Anda mulai mencatat pemasukan dan pengeluaran harian.
+                    </p>
+                    <a href="{{ route('transactions.create') }}" class="mt-3 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#123E34] text-white text-xs font-semibold hover:bg-[#1B594B]">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        Catat Sekarang
+                    </a>
+                </div>
+            @endif
         </div>
 
         <!-- Category Expense Donut Chart -->
         <div class="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col justify-between">
             <div class="mb-4">
                 <h3 class="text-base font-bold text-slate-900">Distribusi Kategori</h3>
-                <p class="text-xs text-slate-400">Proporsi pengeluaran per sektor</p>
+                <p class="text-xs text-slate-400">Proporsi pengeluaran bulan ini</p>
             </div>
             
-            <div class="relative h-48 w-full flex items-center justify-center">
-                <canvas id="categoryChart"></canvas>
-            </div>
+            @if($categoryExpenses->isNotEmpty())
+                <div class="relative h-48 w-full flex items-center justify-center">
+                    <canvas id="categoryChart"></canvas>
+                </div>
 
-            <div class="mt-4 pt-4 border-t border-slate-100 space-y-2 max-h-36 overflow-y-auto">
-                @forelse($categoryExpenses as $cat)
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="text-slate-600 truncate max-w-[140px]">{{ $cat['category_name'] }}</span>
-                        <span class="font-semibold text-slate-800">Rp {{ number_format($cat['total_amount'], 0, ',', '.') }}</span>
+                <div class="mt-4 pt-4 border-t border-slate-100 space-y-2 max-h-36 overflow-y-auto">
+                    @foreach($categoryExpenses as $cat)
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-slate-600 truncate max-w-[140px]">{{ $cat['category_name'] }}</span>
+                            <span class="font-semibold text-slate-800">Rp {{ number_format($cat['total_amount'], 0, ',', '.') }}</span>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="h-48 flex flex-col items-center justify-center text-center p-6 bg-slate-50/60 rounded-xl border border-dashed border-slate-200">
+                    <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-2">
+                        <i data-lucide="pie-chart" class="w-5 h-5 stroke-[1.5]"></i>
                     </div>
-                @empty
-                    <p class="text-xs text-center text-slate-400 py-2">Belum ada pengeluaran</p>
-                @endforelse
-            </div>
+                    <p class="text-xs font-semibold text-slate-600">Belum ada pengeluaran</p>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Pengeluaran bulan ini masih Rp 0</p>
+                </div>
+            @endif
         </div>
     </div>
 
@@ -172,7 +190,7 @@
         <div class="flex items-center justify-between mb-4">
             <div>
                 <h3 class="text-base font-bold text-slate-900">Transaksi Terbaru</h3>
-                <p class="text-xs text-slate-400">5 aktivitas finansial paling mutakhir</p>
+                <p class="text-xs text-slate-400">5 aktivitas finansial mutakhir di akun Anda</p>
             </div>
             <a href="{{ route('transactions.index') }}" class="inline-flex items-center gap-1 text-xs font-semibold text-[#123E34] hover:text-[#1B594B]">
                 Lihat Semua
@@ -188,35 +206,51 @@
                         <th class="py-3 px-3">Deskripsi</th>
                         <th class="py-3 px-3">Kategori</th>
                         <th class="py-3 px-3 text-right">Nominal</th>
+                        <th class="py-3 px-3 text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse($recentTransactions as $tx)
                         <tr class="hover:bg-slate-50/80 transition-colors">
-                            <td class="py-3 px-3 text-xs text-slate-500 whitespace-nowrap">
+                            <td class="py-3.5 px-3 text-xs text-slate-500 whitespace-nowrap">
                                 {{ \Carbon\Carbon::parse($tx->transaction_date)->locale('id')->isoFormat('D MMM Y') }}
                             </td>
-                            <td class="py-3 px-3 font-medium text-slate-800">
-                                <div class="flex items-center gap-2.5">
+                            <td class="py-3.5 px-3 font-medium text-slate-800">
+                                <a href="{{ route('transactions.show', $tx->id) }}" class="flex items-center gap-2.5 hover:text-[#123E34]">
                                     <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 {{ $tx->type === 'income' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600' }}">
                                         <i data-lucide="{{ $tx->type === 'income' ? 'arrow-down-left' : 'arrow-up-right' }}" class="w-4 h-4 stroke-[2.5]"></i>
                                     </div>
                                     <span class="truncate max-w-xs">{{ $tx->description ?: ($tx->type === 'income' ? 'Pemasukan' : 'Pengeluaran') }}</span>
-                                </div>
+                                </a>
                             </td>
-                            <td class="py-3 px-3 whitespace-nowrap">
+                            <td class="py-3.5 px-3 whitespace-nowrap">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-700">
                                     {{ $tx->category->name ?? 'Umum' }}
                                 </span>
                             </td>
-                            <td class="py-3 px-3 text-right font-bold whitespace-nowrap {{ $tx->type === 'income' ? 'text-emerald-600' : 'text-red-600' }}">
+                            <td class="py-3.5 px-3 text-right font-bold whitespace-nowrap {{ $tx->type === 'income' ? 'text-emerald-600' : 'text-red-600' }}">
                                 {{ $tx->type === 'income' ? '+' : '-' }}Rp {{ number_format($tx->amount, 0, ',', '.') }}
+                            </td>
+                            <td class="py-3.5 px-3 text-right whitespace-nowrap">
+                                <a href="{{ route('transactions.show', $tx->id) }}" title="Lihat Detail" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors inline-block">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="py-8 text-center text-xs text-slate-400">
-                                Belum ada transaksi yang dicatat.
+                            <td colspan="5" class="py-12 text-center text-slate-400">
+                                <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-300 mx-auto mb-2">
+                                    <i data-lucide="inbox" class="w-6 h-6 stroke-[1.5]"></i>
+                                </div>
+                                <p class="text-sm font-semibold text-slate-700">Belum ada transaksi yang dicatat</p>
+                                <p class="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
+                                    Catat pengeluaran atau pemasukan pertama Anda untuk melihat ringkasan keuangan di sini.
+                                </p>
+                                <a href="{{ route('transactions.create') }}" class="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#123E34] text-white text-xs font-semibold hover:bg-[#1B594B] shadow-sm">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                    Catat Transaksi Pertama
+                                </a>
                             </td>
                         </tr>
                     @endforelse
@@ -231,7 +265,7 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Trend Chart (Bar/Line)
+    // Trend Chart (Bar)
     const trendCtx = document.getElementById('trendChart');
     if (trendCtx) {
         new Chart(trendCtx, {
@@ -274,7 +308,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         beginAtZero: true,
                         ticks: {
                             callback: function(value) {
-                                return 'Rp ' + (value / 1000000) + ' Jt';
+                                if (value >= 1000000) {
+                                    return 'Rp ' + (value / 1000000) + ' Jt';
+                                } else if (value >= 1000) {
+                                    return 'Rp ' + (value / 1000) + ' Rb';
+                                }
+                                return 'Rp ' + value;
                             }
                         }
                     }
@@ -303,7 +342,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         '#6366F1',
                         '#EC4899',
                         '#8B5CF6',
-                        '#06B6D4'
+                        '#06B6D4',
+                        '#14B8A6',
+                        '#F97316'
                     ],
                     borderWidth: 2,
                     borderColor: '#ffffff',

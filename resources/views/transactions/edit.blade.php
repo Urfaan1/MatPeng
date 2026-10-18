@@ -18,10 +18,6 @@
          x-data="{ 
             type: '{{ old('type', $transaction->type) }}',
             amount: '{{ old('amount', $transaction->amount) }}',
-            categories: @json($categories),
-            get filteredCategories() {
-                return this.categories.filter(c => c.type === this.type);
-            }
          }">
         
         <form method="POST" action="{{ route('transactions.update', $transaction->id) }}" class="space-y-6">
@@ -48,6 +44,12 @@
                     </button>
                 </div>
                 <input type="hidden" name="type" :value="type">
+                @error('type')
+                    <p class="text-xs text-red-600 mt-1.5 flex items-center gap-1">
+                        <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
+                        {{ $message }}
+                    </p>
+                @enderror
             </div>
 
             <!-- Nominal Transaksi -->
@@ -59,23 +61,41 @@
                            name="amount" 
                            x-model="amount"
                            step="0.01"
-                           min="1"
+                           min="0.01"
                            required
-                           class="w-full pl-12 pr-4 py-3 text-lg font-bold rounded-xl border border-slate-200 focus:outline-none focus:border-[#123E34] focus:ring-1 focus:ring-[#123E34]">
+                           class="w-full pl-12 pr-4 py-3 text-lg font-bold rounded-xl border @error('amount') border-red-400 bg-red-50/20 @else border-slate-200 @enderror focus:outline-none focus:border-[#123E34] focus:ring-1 focus:ring-[#123E34]">
                 </div>
                 <template x-if="amount > 0">
-                    <p class="text-xs font-medium text-slate-500 mt-1" x-text="'Nominal: ' + window.formatRupiah(amount)"></p>
+                    <p class="text-xs font-medium text-slate-500 mt-1.5" x-text="'Format: ' + window.formatRupiah(amount)"></p>
                 </template>
+                @error('amount')
+                    <p class="text-xs text-red-600 mt-1.5 flex items-center gap-1">
+                        <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
+                        {{ $message }}
+                    </p>
+                @enderror
             </div>
 
             <!-- Kategori -->
             <div>
                 <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Kategori</label>
-                <select name="category_id" required class="w-full px-4 py-3 text-sm rounded-xl border border-slate-200 focus:outline-none focus:border-[#123E34] focus:ring-1 focus:ring-[#123E34]">
-                    <template x-for="cat in filteredCategories" :key="cat.id">
-                        <option :value="cat.id" :selected="cat.id == {{ $transaction->category_id }}" x-text="cat.name"></option>
-                    </template>
+                <select name="category_id" required 
+                        class="w-full px-4 py-3 text-sm rounded-xl border @error('category_id') border-red-400 bg-red-50/20 @else border-slate-200 @enderror focus:outline-none focus:border-[#123E34] focus:ring-1 focus:ring-[#123E34]">
+                    <option value="">Pilih Kategori</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" 
+                                x-show="type === '{{ $category->type }}'"
+                                {{ old('category_id', $transaction->category_id) == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
                 </select>
+                @error('category_id')
+                    <p class="text-xs text-red-600 mt-1.5 flex items-center gap-1">
+                        <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
+                        {{ $message }}
+                    </p>
+                @enderror
             </div>
 
             <!-- Tanggal Transaksi -->
@@ -85,20 +105,32 @@
                        name="transaction_date" 
                        value="{{ old('transaction_date', $transaction->transaction_date?->format('Y-m-d') ?? now()->format('Y-m-d')) }}" 
                        required
-                       class="w-full px-4 py-3 text-sm rounded-xl border border-slate-200 focus:outline-none focus:border-[#123E34] focus:ring-1 focus:ring-[#123E34]">
+                       class="w-full px-4 py-3 text-sm rounded-xl border @error('transaction_date') border-red-400 bg-red-50/20 @else border-slate-200 @enderror focus:outline-none focus:border-[#123E34] focus:ring-1 focus:ring-[#123E34]">
+                @error('transaction_date')
+                    <p class="text-xs text-red-600 mt-1.5 flex items-center gap-1">
+                        <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
+                        {{ $message }}
+                    </p>
+                @enderror
             </div>
 
             <!-- Deskripsi (Opsional) -->
             <div>
                 <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Deskripsi / Catatan</label>
                 <textarea name="description" rows="3" 
-                          class="w-full px-4 py-3 text-sm rounded-xl border border-slate-200 focus:outline-none focus:border-[#123E34] focus:ring-1 focus:ring-[#123E34]">{{ old('description', $transaction->description) }}</textarea>
+                          class="w-full px-4 py-3 text-sm rounded-xl border @error('description') border-red-400 bg-red-50/20 @else border-slate-200 @enderror focus:outline-none focus:border-[#123E34] focus:ring-1 focus:ring-[#123E34]">{{ old('description', $transaction->description) }}</textarea>
+                @error('description')
+                    <p class="text-xs text-red-600 mt-1.5 flex items-center gap-1">
+                        <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
+                        {{ $message }}
+                    </p>
+                @enderror
             </div>
 
             <!-- Buttons -->
             <div class="flex items-center justify-between pt-4 border-t border-slate-100">
                 <button type="button" 
-                        onclick="if(confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) document.getElementById('delete-form').submit();"
+                        onclick="if(confirm('Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan.')) document.getElementById('delete-form').submit();"
                         class="px-4 py-2.5 rounded-xl text-red-600 hover:bg-red-50 text-sm font-semibold transition-all flex items-center gap-1.5">
                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                     Hapus

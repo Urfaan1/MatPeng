@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1B594B" />
+      <stop offset="100%" stop-color="#123E34" />
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34D399" />
+      <stop offset="100%" stop-color="#10B981" />
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="42" fill="url(#grad)" />
+  <!-- Wallet Body -->
+  <path d="M42 66C42 57.1634 49.1634 50 58 50H138C144.627 50 150 55.3726 150 62V130C150 138.837 142.837 146 134 146H58C49.1634 146 42 138.837 42 130V66Z" fill="#0D2C25" opacity="0.6" />
+  <rect x="46" y="58" width="100" height="76" rx="14" fill="#ffffff" fill-opacity="0.1" stroke="#34D399" stroke-width="4" />
+  <!-- Flap -->
+  <path d="M106 82H146V110H106C98.268 110 92 103.732 92 96C92 88.268 98.268 82 106 82Z" fill="url(#gold)" />
+  <!-- Clasp Button -->
+  <circle cx="114" cy="96" r="5" fill="#123E34" />
+  <!-- Trending Arrow Up -->
+  <path d="M64 112L80 94L94 104L118 78" stroke="#34D399" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M106 78H118V90" stroke="#34D399" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

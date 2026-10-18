@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,11 +20,13 @@ class ExampleTest extends TestCase
     }
 
     /**
-     * Test dashboard returns 200 and renders MatPeng title.
+     * Test dashboard returns 200 for authenticated user.
      */
     public function test_dashboard_returns_successful_response(): void
     {
-        $response = $this->get('/dashboard');
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/dashboard');
         $response->assertStatus(200);
         $response->assertSee('MatPeng');
         $response->assertSee('Total Saldo Terkini');

@@ -69,7 +69,17 @@
             </div>
 
             <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#123E34] hover:bg-[#1B594B] text-white text-xs md:text-sm font-semibold transition-all">
-                Perbarui Password
+    <!-- Keluar Akun -->
+    <div class="p-6 rounded-2xl bg-white border border-red-100 shadow-sm space-y-3">
+        <h3 class="font-bold text-red-600 text-sm">Keluar dari Sesi</h3>
+        <p class="text-xs text-slate-500">
+            Keluar dari sesi saat ini di peramban ini. Anda dapat masuk kembali kapan saja dengan email dan password Anda.
+        </p>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs md:text-sm font-semibold transition-all flex items-center gap-2">
+                <i data-lucide="log-out" class="w-4 h-4"></i>
+                Keluar dari Akun
             </button>
         </form>
     </div>

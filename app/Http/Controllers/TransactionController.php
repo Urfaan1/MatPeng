@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +12,7 @@ class TransactionController extends Controller
     {
         $user = Auth::user();
 
-        $query = $user ? $user->transactions()->with('category') : Transaction::with('category');
+        $query = $user->transactions()->with('category');
 
         if ($request->filled('type')) {
             $query->where('type', $request->type);
@@ -28,7 +27,7 @@ class TransactionController extends Controller
         }
 
         $transactions = $query->latest('transaction_date')->latest('id')->paginate(15);
-        $categories = $user ? $user->categories()->get() : Category::all();
+        $categories = $user->categories()->get();
 
         return view('transactions.index', compact('transactions', 'categories'));
     }
@@ -36,7 +35,7 @@ class TransactionController extends Controller
     public function create()
     {
         $user = Auth::user();
-        $categories = $user ? $user->categories()->get() : Category::all();
+        $categories = $user->categories()->get();
 
         return view('transactions.create', compact('categories'));
     }
@@ -49,25 +48,41 @@ class TransactionController extends Controller
 
     public function show(Transaction $transaction)
     {
+        if ($transaction->user_id !== Auth::id()) {
+            abort(403, 'Anda tidak berhak mengakses transaksi ini.');
+        }
+
         return view('transactions.show', compact('transaction'));
     }
 
     public function edit(Transaction $transaction)
     {
+        if ($transaction->user_id !== Auth::id()) {
+            abort(403, 'Anda tidak berhak mengakses transaksi ini.');
+        }
+
         $user = Auth::user();
-        $categories = $user ? $user->categories()->get() : Category::all();
+        $categories = $user->categories()->get();
 
         return view('transactions.edit', compact('transaction', 'categories'));
     }
 
     public function update(Request $request, Transaction $transaction)
     {
+        if ($transaction->user_id !== Auth::id()) {
+            abort(403, 'Anda tidak berhak mengakses transaksi ini.');
+        }
+
         // Akan diimplementasikan penuh pada Tahap 3
         return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil diperbarui');
     }
 
     public function destroy(Transaction $transaction)
     {
+        if ($transaction->user_id !== Auth::id()) {
+            abort(403, 'Anda tidak berhak menghapus transaksi ini.');
+        }
+
         // Akan diimplementasikan penuh pada Tahap 3
         return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil dihapus');
     }

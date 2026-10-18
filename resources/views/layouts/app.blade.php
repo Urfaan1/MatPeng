@@ -79,14 +79,23 @@
                 Tambah Transaksi
             </a>
 
-            <div class="flex items-center gap-3 pt-2">
-                <div class="w-9 h-9 rounded-full bg-emerald-700 flex items-center justify-center text-white font-bold text-sm">
-                    {{ substr(Auth::user()->name ?? 'Pengguna', 0, 1) }}
+            <div class="flex items-center justify-between gap-3 pt-2">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-9 h-9 rounded-full bg-emerald-700 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                        {{ substr(Auth::user()->name ?? 'P', 0, 1) }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-semibold text-white truncate">{{ Auth::user()->name ?? 'Pengguna' }}</p>
+                        <p class="text-[11px] text-emerald-300/70 truncate">{{ Auth::user()->email ?? '' }}</p>
+                    </div>
                 </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-xs font-semibold text-white truncate">{{ Auth::user()->name ?? 'Tamu MatPeng' }}</p>
-                    <p class="text-[11px] text-emerald-300/70 truncate">{{ Auth::user()->email ?? 'demo@matpeng.id' }}</p>
-                </div>
+
+                <form method="POST" action="{{ route('logout') }}" class="shrink-0">
+                    @csrf
+                    <button type="submit" title="Keluar dari akun" class="p-2 rounded-xl text-emerald-300 hover:text-white hover:bg-emerald-900/60 transition-colors">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </button>
+                </form>
             </div>
         </div>
     </aside>

@@ -18,22 +18,9 @@ class ReportController extends Controller
         $month = (int) ($request->month ?? now()->format('n'));
         $user = Auth::user();
 
-        if ($user) {
-            $summary = $this->financeService->getMonthlySummary($user, $year, $month);
-            $categoryExpenses = $this->financeService->getCategoryExpenseDistribution($user, $year, $month);
-            $trend = $this->financeService->getMonthlyTrend($user, 12);
-        } else {
-            $summary = [
-                'period_label' => now()->locale('id')->isoFormat('MMMM Y'),
-                'total_balance' => 8450000,
-                'monthly_income' => 12500000,
-                'monthly_expense' => 4050000,
-                'net_cash_flow' => 8450000,
-                'transaction_count' => 18,
-            ];
-            $categoryExpenses = collect();
-            $trend = ['labels' => [], 'income' => [], 'expense' => []];
-        }
+        $summary = $this->financeService->getMonthlySummary($user, $year, $month);
+        $categoryExpenses = $this->financeService->getCategoryExpenseDistribution($user, $year, $month);
+        $trend = $this->financeService->getMonthlyTrend($user, 12);
 
         return view('reports.index', compact('summary', 'categoryExpenses', 'trend', 'year', 'month'));
     }

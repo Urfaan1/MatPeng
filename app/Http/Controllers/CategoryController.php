@@ -11,7 +11,7 @@ class CategoryController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $categories = $user ? $user->categories()->withCount('transactions')->get() : Category::all();
+        $categories = $user->categories()->withCount('transactions')->get();
 
         return view('categories.index', compact('categories'));
     }
@@ -24,12 +24,20 @@ class CategoryController extends Controller
 
     public function update(Request $request, Category $category)
     {
+        if ($category->user_id !== Auth::id()) {
+            abort(403, 'Anda tidak berhak memperbarui kategori ini.');
+        }
+
         // Akan diimplementasikan penuh pada Tahap 5
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil diperbarui');
     }
 
     public function destroy(Category $category)
     {
+        if ($category->user_id !== Auth::id()) {
+            abort(403, 'Anda tidak berhak menghapus kategori ini.');
+        }
+
         // Akan diimplementasikan penuh pada Tahap 5
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil dihapus');
     }

@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TransactionController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root to dashboard (if logged in, otherwise auth middleware will redirect to login)
@@ -45,4 +46,24 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('/settings/profile', [SettingsController::class, 'updateProfile'])->name('settings.profile');
     Route::put('/settings/password', [SettingsController::class, 'updatePassword'])->name('settings.password');
+});
+
+// Secure migration route for serverless environments (e.g. Vercel)
+Route::get('/migrate', function () {
+    if (empty(request('key')) || request('key') !== config('app.key')) {
+        abort(403, 'Akses ditolak: APP_KEY tidak sesuai.');
+    }
+
+    try {
+        $options = ['--force' => true];
+        if (request()->boolean('seed')) {
+            $options['--seed'] = true;
+        }
+
+        Artisan::call('migrate', $options);
+
+        return response('<pre style="background:#1e1e1e;color:#00ff66;padding:20px;border-radius:8px;font-family:monospace;">'.Artisan::output()."\nMigrasi berhasil dijalankan!</pre>", 200);
+    } catch (Throwable $e) {
+        return response('<pre style="background:#1e1e1e;color:#ff4444;padding:20px;border-radius:8px;font-family:monospace;">Error: '.$e->getMessage().'</pre>', 500);
+    }
 });

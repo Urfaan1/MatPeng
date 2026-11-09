@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class CategoryController extends Controller
@@ -13,7 +14,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = Auth::user();
         $categories = $user->categories()
             ->withCount('transactions')
@@ -28,7 +29,7 @@ class CategoryController extends Controller
      */
     public function store(CategoryRequest $request)
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = Auth::user();
 
         $category = $user->categories()->create($request->validated());
@@ -64,6 +65,7 @@ class CategoryController extends Controller
         // Cek keterkaitan data: jika sudah digunakan pada transaksi, tidak boleh dihapus
         if ($category->transactions()->exists()) {
             $count = $category->transactions()->count();
+
             return redirect()->route('categories.index')
                 ->with('error', "Kategori '{$category->name}' tidak dapat dihapus karena sedang digunakan oleh {$count} transaksi aktif. Silakan ubah kategori pada transaksi terkait terlebih dahulu.");
         }

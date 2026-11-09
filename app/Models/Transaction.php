@@ -66,6 +66,6 @@ class Transaction extends Model
     public function scopeForPeriod(Builder $query, int $year, int $month): Builder
     {
         return $query->whereYear('transaction_date', $year)
-                     ->whereMonth('transaction_date', $month);
+            ->whereMonth('transaction_date', $month);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Requests\UpdateTransactionRequest;
 use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,7 +16,7 @@ class TransactionController extends Controller
      */
     public function index(Request $request)
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = Auth::user();
 
         $query = $user->transactions()->with('category');
@@ -40,7 +41,7 @@ class TransactionController extends Controller
 
         // Filter pencarian berdasarkan deskripsi
         if ($request->filled('search')) {
-            $query->where('description', 'like', '%' . trim($request->search) . '%');
+            $query->where('description', 'like', '%'.trim($request->search).'%');
         }
 
         $transactions = $query->latest('transaction_date')
@@ -58,7 +59,7 @@ class TransactionController extends Controller
      */
     public function create()
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = Auth::user();
         $categories = $user->categories()->orderBy('name')->get();
 
@@ -70,7 +71,7 @@ class TransactionController extends Controller
      */
     public function store(StoreTransactionRequest $request)
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = Auth::user();
 
         $transaction = $user->transactions()->create($request->validated());
@@ -104,7 +105,7 @@ class TransactionController extends Controller
             abort(403, 'Anda tidak memiliki hak akses ke transaksi ini.');
         }
 
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = Auth::user();
         $categories = $user->categories()->orderBy('name')->get();
 

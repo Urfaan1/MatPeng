@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
-use App\Models\Transaction;
 use App\Models\User;
 use App\Services\FinanceSummaryService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -14,8 +13,11 @@ class DashboardCalculationTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Category $incomeCategory;
+
     protected Category $expenseCategory;
+
     protected FinanceSummaryService $financeService;
 
     protected function setUp(): void
@@ -23,7 +25,7 @@ class DashboardCalculationTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create();
-        $this->financeService = new FinanceSummaryService();
+        $this->financeService = new FinanceSummaryService;
         $this->financeService->createDefaultCategories($this->user);
 
         $this->incomeCategory = $this->user->categories()->where('type', 'income')->first();

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -12,6 +13,7 @@ class SettingsController extends Controller
     public function index()
     {
         $user = Auth::user();
+
         return view('settings.index', compact('user'));
     }
 
@@ -27,7 +29,7 @@ class SettingsController extends Controller
             'name.max' => 'Nama maksimal 255 karakter.',
         ]);
 
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = Auth::user();
         $user->update([
             'name' => $validated['name'],
@@ -52,7 +54,7 @@ class SettingsController extends Controller
             'new_password.different' => 'Kata sandi baru harus berbeda dari kata sandi saat ini.',
         ]);
 
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = Auth::user();
         $user->update([
             'password' => Hash::make($validated['new_password']),

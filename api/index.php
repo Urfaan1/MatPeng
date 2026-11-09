@@ -13,4 +13,4 @@ chdir($projectRoot);
 $_ENV['APP_BASE_PATH'] = $projectRoot;
 
 // Bootstrap and run Laravel
-require $projectRoot . '/public/index.php';
+require $projectRoot.'/public/index.php';

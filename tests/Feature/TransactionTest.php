@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
-use App\Models\Transaction;
 use App\Models\User;
 use App\Services\FinanceSummaryService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -14,7 +13,9 @@ class TransactionTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Category $incomeCategory;
+
     protected Category $expenseCategory;
 
     protected function setUp(): void
@@ -22,7 +23,7 @@ class TransactionTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create();
-        (new FinanceSummaryService())->createDefaultCategories($this->user);
+        (new FinanceSummaryService)->createDefaultCategories($this->user);
 
         $this->incomeCategory = $this->user->categories()->where('type', 'income')->first();
         $this->expenseCategory = $this->user->categories()->where('type', 'expense')->first();
@@ -109,7 +110,7 @@ class TransactionTest extends TestCase
     public function test_other_users_category_rejected(): void
     {
         $otherUser = User::factory()->create();
-        (new FinanceSummaryService())->createDefaultCategories($otherUser);
+        (new FinanceSummaryService)->createDefaultCategories($otherUser);
         $otherUserCategory = $otherUser->categories()->where('type', 'income')->first();
 
         $response = $this->actingAs($this->user)->post(route('transactions.store'), [
@@ -177,7 +178,7 @@ class TransactionTest extends TestCase
     public function test_user_cannot_access_or_modify_other_users_transaction(): void
     {
         $otherUser = User::factory()->create();
-        (new FinanceSummaryService())->createDefaultCategories($otherUser);
+        (new FinanceSummaryService)->createDefaultCategories($otherUser);
         $otherCategory = $otherUser->categories()->where('type', 'expense')->first();
 
         $otherTx = $otherUser->transactions()->create([

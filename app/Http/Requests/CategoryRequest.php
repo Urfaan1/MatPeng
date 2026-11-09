@@ -31,7 +31,7 @@ class CategoryRequest extends FormRequest
                 Rule::unique('categories')
                     ->where(function ($query) {
                         return $query->where('user_id', Auth::id())
-                                     ->where('type', $this->input('type'));
+                            ->where('type', $this->input('type'));
                     })
                     ->ignore($categoryId),
             ],

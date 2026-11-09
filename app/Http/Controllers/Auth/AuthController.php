@@ -42,7 +42,7 @@ class AuthController extends Controller
         ]);
 
         // Rate limiting: cegah brute force attack (maksimal 5 percobaan per menit per IP & email)
-        $throttleKey = Str::transliterate(Str::lower($request->input('email')) . '|' . $request->ip());
+        $throttleKey = Str::transliterate(Str::lower($request->input('email')).'|'.$request->ip());
 
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
             $seconds = RateLimiter::availableIn($throttleKey);
@@ -60,7 +60,7 @@ class AuthController extends Controller
             // Pastikan user memiliki kategori default (idempotent)
             $this->financeService->createDefaultCategories(Auth::user());
 
-            return redirect()->intended(route('dashboard'))->with('success', 'Selamat datang kembali, ' . Auth::user()->name . '!');
+            return redirect()->intended(route('dashboard'))->with('success', 'Selamat datang kembali, '.Auth::user()->name.'!');
         }
 
         RateLimiter::hit($throttleKey, 60);

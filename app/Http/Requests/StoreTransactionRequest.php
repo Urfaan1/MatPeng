@@ -29,7 +29,7 @@ class StoreTransactionRequest extends FormRequest
                 Rule::exists('categories', 'id')
                     ->where(function ($query) {
                         $query->where('user_id', Auth::id())
-                              ->where('type', $this->input('type'));
+                            ->where('type', $this->input('type'));
                     }),
             ],
             'transaction_date' => ['required', 'date'],

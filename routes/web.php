@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TransactionController;
@@ -48,6 +49,10 @@ Route::middleware(['auth', 'user'])->group(function () {
 
     // Reports
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+
+    // Invoices & Download
+    Route::get('/invoices', [InvoiceController::class, 'show'])->name('invoices.show');
+    Route::get('/invoices/export-csv', [InvoiceController::class, 'exportCsv'])->name('invoices.export-csv');
 
     // Settings
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');

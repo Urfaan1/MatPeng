@@ -77,6 +77,12 @@
                     Laporan
                 </a>
 
+                <a href="{{ route('invoices.show') }}" 
+                   class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all {{ request()->routeIs('invoices.*') ? 'bg-[#1B594B] text-white shadow-sm font-semibold' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
+                    <i data-lucide="receipt" class="w-5 h-5"></i>
+                    Invoice Keuangan
+                </a>
+
                 <a href="{{ route('settings.index') }}" 
                    class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all {{ request()->routeIs('settings.*') ? 'bg-[#1B594B] text-white shadow-sm font-semibold' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
                     <i data-lucide="settings" class="w-5 h-5"></i>

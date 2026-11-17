@@ -70,6 +70,17 @@
                 <i data-lucide="settings" class="w-5 h-5"></i>
                 Pengaturan
             </a>
+
+            @if(Auth::user() && Auth::user()->is_admin)
+            <div class="pt-4 pb-1">
+                <p class="px-4 text-[10px] font-bold uppercase tracking-wider text-emerald-300/60">Administrator</p>
+            </div>
+            <a href="{{ route('admin.dashboard') }}" 
+               class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all {{ request()->routeIs('admin.*') ? 'bg-amber-400 text-slate-950 shadow-md font-bold' : 'text-amber-300 hover:bg-emerald-900/40 hover:text-white' }}">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                Panel Admin
+            </a>
+            @endif
         </nav>
 
         <!-- Sidebar User & Quick CTA -->
@@ -112,6 +123,11 @@
             </div>
 
             <div class="flex items-center gap-2">
+                @if(Auth::user() && Auth::user()->is_admin)
+                <a href="{{ route('admin.dashboard') }}" class="text-[11px] font-bold bg-amber-400 text-slate-950 px-2 py-1 rounded-md flex items-center gap-1 shadow-sm">
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Admin
+                </a>
+                @endif
                 <span class="text-xs bg-emerald-800/80 text-emerald-200 px-2.5 py-1 rounded-full border border-emerald-700/60">
                     {{ now()->locale('id')->isoFormat('D MMM Y') }}
                 </span>

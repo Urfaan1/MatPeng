@@ -60,6 +60,10 @@ class AuthController extends Controller
             // Pastikan user memiliki kategori default (idempotent)
             $this->financeService->createDefaultCategories(Auth::user());
 
+            if (Auth::user()->is_admin) {
+                return redirect()->intended(route('admin.dashboard'))->with('success', 'Selamat datang Admin, '.Auth::user()->name.'!');
+            }
+
             return redirect()->intended(route('dashboard'))->with('success', 'Selamat datang kembali, '.Auth::user()->name.'!');
         }
 

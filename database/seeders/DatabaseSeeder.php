@@ -17,9 +17,24 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Akun Administrator Bawaan
+        User::firstOrCreate(
+            ['email' => 'admin@matpeng.com'],
+            [
+                'name' => 'Administrator MatPeng',
+                'password' => bcrypt('password'),
+                'is_admin' => true,
+            ]
+        );
+
+        // Akun Pengguna Biasa
+        User::firstOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Test User',
+                'password' => bcrypt('password'),
+                'is_admin' => false,
+            ]
+        );
     }
 }

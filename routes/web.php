@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
@@ -9,8 +10,11 @@ use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
-// Redirect root to dashboard (if logged in, otherwise auth middleware will redirect to login)
+// Redirect root to dashboard (or admin dashboard if admin)
 Route::get('/', function () {
+    if (auth()->check() && auth()->user()->is_admin) {
+        return redirect()->route('admin.dashboard');
+    }
     return redirect()->route('dashboard');
 });
 
@@ -46,6 +50,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('/settings/profile', [SettingsController::class, 'updateProfile'])->name('settings.profile');
     Route::put('/settings/password', [SettingsController::class, 'updatePassword'])->name('settings.password');
+});
+
+// Admin Dedicated Routes (Auth + Admin Middleware)
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::post('/users/{user}/toggle-admin', [AdminDashboardController::class, 'toggleAdmin'])->name('users.toggle-admin');
 });
 
 // Secure migration route for serverless environments (e.g. Vercel)

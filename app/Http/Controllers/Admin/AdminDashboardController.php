@@ -7,6 +7,8 @@ use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schema;
 
 class AdminDashboardController extends Controller
 {
@@ -15,10 +17,21 @@ class AdminDashboardController extends Controller
      */
     public function index(Request $request)
     {
+        // Pastikan kolom database terbaru sudah termigrasi secara otomatis
+        if (! Schema::hasColumn('users', 'is_active') || ! Schema::hasColumn('users', 'is_admin')) {
+            try {
+                Artisan::call('migrate', ['--force' => true]);
+            } catch (\Throwable $e) {
+                // Lanjutkan dengan fallback aman
+            }
+        }
+
+        $hasIsActiveColumn = Schema::hasColumn('users', 'is_active');
+
         $totalUsers = User::count();
         $totalAdmins = User::where('is_admin', true)->count();
-        $pendingUsersCount = User::where('is_admin', false)->where('is_active', false)->count();
-        $activeUsersCount = User::where('is_admin', false)->where('is_active', true)->count();
+        $pendingUsersCount = $hasIsActiveColumn ? User::where('is_admin', false)->where('is_active', false)->count() : 0;
+        $activeUsersCount = $hasIsActiveColumn ? User::where('is_admin', false)->where('is_active', true)->count() : $totalUsers - $totalAdmins;
         $totalTransactions = Transaction::count();
         $totalCategories = Category::count();
 
@@ -39,12 +52,18 @@ class AdminDashboardController extends Controller
             });
         }
 
-        if ($filter === 'pending') {
-            $usersQuery->where('is_admin', false)->where('is_active', false);
-        } elseif ($filter === 'active') {
-            $usersQuery->where('is_admin', false)->where('is_active', true);
-        } elseif ($filter === 'admin') {
-            $usersQuery->where('is_admin', true);
+        if ($hasIsActiveColumn) {
+            if ($filter === 'pending') {
+                $usersQuery->where('is_admin', false)->where('is_active', false);
+            } elseif ($filter === 'active') {
+                $usersQuery->where('is_admin', false)->where('is_active', true);
+            } elseif ($filter === 'admin') {
+                $usersQuery->where('is_admin', true);
+            }
+        } else {
+            if ($filter === 'admin') {
+                $usersQuery->where('is_admin', true);
+            }
         }
 
         $users = $usersQuery->paginate(15)->withQueryString();
@@ -71,6 +90,12 @@ class AdminDashboardController extends Controller
     {
         if (auth()->id() === $user->id) {
             return back()->with('error', 'Anda tidak dapat mengubah status aktif akun Anda sendiri.');
+        }
+
+        if (! Schema::hasColumn('users', 'is_active')) {
+            try {
+                Artisan::call('migrate', ['--force' => true]);
+            } catch (\Throwable $e) {}
         }
 
         $user->is_active = ! $user->is_active;

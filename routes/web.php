@@ -26,11 +26,14 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 
-// Protected Private Routes (Auth Only)
+// Protected Authenticated Routes (Both User and Admin)
 Route::middleware('auth')->group(function () {
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
 
+// Protected Regular User Routes (Admin Forbidden, Regular Active Users Only)
+Route::middleware(['auth', 'user'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -56,6 +59,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::post('/users/{user}/toggle-admin', [AdminDashboardController::class, 'toggleAdmin'])->name('users.toggle-admin');
+    Route::post('/users/{user}/toggle-active', [AdminDashboardController::class, 'toggleActive'])->name('users.toggle-active');
 });
 
 // Secure migration route for serverless environments (e.g. Vercel)
@@ -73,14 +77,14 @@ Route::get('/init-admin', function () {
                 'name' => request('name', 'Administrator MatPeng'),
                 'password' => \Illuminate\Support\Facades\Hash::make(request('password', 'password')),
                 'is_admin' => true,
+                'is_active' => true,
             ]
         );
 
-        // Pastikan status is_admin bernilai true
-        if (! $admin->is_admin) {
-            $admin->is_admin = true;
-            $admin->save();
-        }
+        // Pastikan status is_admin & is_active bernilai true
+        $admin->is_admin = true;
+        $admin->is_active = true;
+        $admin->save();
 
         return response('
             <div style="font-family: system-ui, sans-serif; max-width: 480px; margin: 60px auto; padding: 28px; border-radius: 16px; background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);">

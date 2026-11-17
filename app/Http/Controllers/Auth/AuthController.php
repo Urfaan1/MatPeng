@@ -54,17 +54,30 @@ class AuthController extends Controller
         $remember = $request->boolean('remember');
 
         if (Auth::attempt($credentials, $remember)) {
+            $user = Auth::user();
+
+            // Jika bukan admin dan akun belum diaktifkan oleh admin
+            if (! $user->is_admin && ! $user->is_active) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                throw ValidationException::withMessages([
+                    'email' => 'Akun Anda sedang menunggu konfirmasi atau aktivasi dari Administrator sebelum dapat digunakan.',
+                ]);
+            }
+
             RateLimiter::clear($throttleKey);
             $request->session()->regenerate();
 
-            // Pastikan user memiliki kategori default (idempotent)
-            $this->financeService->createDefaultCategories(Auth::user());
-
-            if (Auth::user()->is_admin) {
-                return redirect()->intended(route('admin.dashboard'))->with('success', 'Selamat datang Admin, '.Auth::user()->name.'!');
+            if ($user->is_admin) {
+                return redirect()->intended(route('admin.dashboard'))->with('success', 'Selamat datang Admin, '.$user->name.'!');
             }
 
-            return redirect()->intended(route('dashboard'))->with('success', 'Selamat datang kembali, '.Auth::user()->name.'!');
+            // Pastikan user biasa memiliki kategori default (idempotent)
+            $this->financeService->createDefaultCategories($user);
+
+            return redirect()->intended(route('dashboard'))->with('success', 'Selamat datang kembali, '.$user->name.'!');
         }
 
         RateLimiter::hit($throttleKey, 60);
@@ -105,16 +118,15 @@ class AuthController extends Controller
             'name' => $validated['name'],
             'email' => Str::lower($validated['email']),
             'password' => Hash::make($validated['password']),
+            'is_admin' => false,
+            'is_active' => false,
         ]);
 
         // Buat kategori bawaan default untuk pengguna baru
         $this->financeService->createDefaultCategories($user);
 
-        // Login otomatis pengguna baru
-        Auth::login($user);
-        $request->session()->regenerate();
-
-        return redirect()->route('dashboard')->with('success', 'Akun Anda berhasil dibuat! Selamat datang di MatPeng.');
+        // Jangan langsung login, beri tahu bahwa akun menunggu konfirmasi/aktivasi admin
+        return redirect()->route('login')->with('info', 'Pendaftaran berhasil! Akun Anda sedang menunggu konfirmasi atau aktivasi dari Administrator sebelum dapat masuk.');
     }
 
     /**

@@ -41,54 +41,58 @@
 
         <!-- Navigation Menu -->
         <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
-            <a href="{{ route('dashboard') }}" 
-               class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all {{ request()->routeIs('dashboard') ? 'bg-[#1B594B] text-white shadow-sm font-semibold' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
-                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
-                Dashboard
-            </a>
-
-            <a href="{{ route('transactions.index') }}" 
-               class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all {{ request()->routeIs('transactions.*') ? 'bg-[#1B594B] text-white shadow-sm font-semibold' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
-                <i data-lucide="arrow-left-right" class="w-5 h-5"></i>
-                Transaksi
-            </a>
-
-            <a href="{{ route('categories.index') }}" 
-               class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all {{ request()->routeIs('categories.*') ? 'bg-[#1B594B] text-white shadow-sm font-semibold' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
-                <i data-lucide="tags" class="w-5 h-5"></i>
-                Kategori
-            </a>
-
-            <a href="{{ route('reports.index') }}" 
-               class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all {{ request()->routeIs('reports.*') ? 'bg-[#1B594B] text-white shadow-sm font-semibold' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
-                <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
-                Laporan
-            </a>
-
-            <a href="{{ route('settings.index') }}" 
-               class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all {{ request()->routeIs('settings.*') ? 'bg-[#1B594B] text-white shadow-sm font-semibold' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
-                <i data-lucide="settings" class="w-5 h-5"></i>
-                Pengaturan
-            </a>
-
             @if(Auth::user() && Auth::user()->is_admin)
-            <div class="pt-4 pb-1">
-                <p class="px-4 text-[10px] font-bold uppercase tracking-wider text-emerald-300/60">Administrator</p>
-            </div>
-            <a href="{{ route('admin.dashboard') }}" 
-               class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all {{ request()->routeIs('admin.*') ? 'bg-amber-400 text-slate-950 shadow-md font-bold' : 'text-amber-300 hover:bg-emerald-900/40 hover:text-white' }}">
-                <i data-lucide="shield-check" class="w-5 h-5"></i>
-                Panel Admin
-            </a>
+                <!-- Navigasi Eksklusif Admin -->
+                <div class="pb-2">
+                    <p class="px-4 text-[10px] font-bold uppercase tracking-wider text-emerald-300/60">Administrator</p>
+                </div>
+                <a href="{{ route('admin.dashboard') }}" 
+                   class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all {{ request()->routeIs('admin.*') ? 'bg-amber-400 text-slate-950 shadow-md font-bold' : 'text-amber-300 hover:bg-emerald-900/40 hover:text-white' }}">
+                    <i data-lucide="shield-check" class="w-5 h-5"></i>
+                    Panel Admin
+                </a>
+            @else
+                <!-- Navigasi Pengguna Biasa -->
+                <a href="{{ route('dashboard') }}" 
+                   class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all {{ request()->routeIs('dashboard') ? 'bg-[#1B594B] text-white shadow-sm font-semibold' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                    Dashboard
+                </a>
+
+                <a href="{{ route('transactions.index') }}" 
+                   class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all {{ request()->routeIs('transactions.*') ? 'bg-[#1B594B] text-white shadow-sm font-semibold' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
+                    <i data-lucide="arrow-left-right" class="w-5 h-5"></i>
+                    Transaksi
+                </a>
+
+                <a href="{{ route('categories.index') }}" 
+                   class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all {{ request()->routeIs('categories.*') ? 'bg-[#1B594B] text-white shadow-sm font-semibold' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
+                    <i data-lucide="tags" class="w-5 h-5"></i>
+                    Kategori
+                </a>
+
+                <a href="{{ route('reports.index') }}" 
+                   class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all {{ request()->routeIs('reports.*') ? 'bg-[#1B594B] text-white shadow-sm font-semibold' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                    Laporan
+                </a>
+
+                <a href="{{ route('settings.index') }}" 
+                   class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all {{ request()->routeIs('settings.*') ? 'bg-[#1B594B] text-white shadow-sm font-semibold' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
+                    Pengaturan
+                </a>
             @endif
         </nav>
 
         <!-- Sidebar User & Quick CTA -->
         <div class="p-4 border-t border-emerald-900/60 bg-[#0d2c25]/40">
+            @if(!Auth::user() || !Auth::user()->is_admin)
             <a href="{{ route('transactions.create') }}" class="w-full mb-3 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-[#123E34] font-semibold text-sm transition-all shadow-md active:scale-[0.98]">
                 <i data-lucide="plus-circle" class="w-4 h-4 stroke-[2.5]"></i>
                 Tambah Transaksi
             </a>
+            @endif
 
             <div class="flex items-center justify-between gap-3 pt-2">
                 <div class="flex items-center gap-2.5 min-w-0">
@@ -160,35 +164,50 @@
 
     <!-- Mobile Bottom Navigation -->
     <nav class="md:hidden fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-2xl px-2 py-1.5 flex items-center justify-around">
-        <a href="{{ route('dashboard') }}" 
-           class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-xs {{ request()->routeIs('dashboard') ? 'text-[#123E34] font-bold' : 'text-slate-400 hover:text-slate-600 font-medium' }}">
-            <i data-lucide="layout-dashboard" class="w-5 h-5 {{ request()->routeIs('dashboard') ? 'stroke-[2.5]' : '' }}"></i>
-            <span>Beranda</span>
-        </a>
+        @if(Auth::user() && Auth::user()->is_admin)
+            <a href="{{ route('admin.dashboard') }}" 
+               class="flex flex-col items-center gap-1 py-1 px-4 rounded-xl text-xs text-amber-600 font-bold">
+                <i data-lucide="shield-check" class="w-5 h-5 stroke-[2.5]"></i>
+                <span>Panel Admin</span>
+            </a>
+            <form method="POST" action="{{ route('logout') }}" class="inline">
+                @csrf
+                <button type="submit" class="flex flex-col items-center gap-1 py-1 px-4 rounded-xl text-xs text-rose-600 font-medium">
+                    <i data-lucide="log-out" class="w-5 h-5"></i>
+                    <span>Keluar</span>
+                </button>
+            </form>
+        @else
+            <a href="{{ route('dashboard') }}" 
+               class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-xs {{ request()->routeIs('dashboard') ? 'text-[#123E34] font-bold' : 'text-slate-400 hover:text-slate-600 font-medium' }}">
+                <i data-lucide="layout-dashboard" class="w-5 h-5 {{ request()->routeIs('dashboard') ? 'stroke-[2.5]' : '' }}"></i>
+                <span>Beranda</span>
+            </a>
 
-        <a href="{{ route('transactions.index') }}" 
-           class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-xs {{ request()->routeIs('transactions.*') && !request()->routeIs('transactions.create') ? 'text-[#123E34] font-bold' : 'text-slate-400 hover:text-slate-600 font-medium' }}">
-            <i data-lucide="arrow-left-right" class="w-5 h-5"></i>
-            <span>Transaksi</span>
-        </a>
+            <a href="{{ route('transactions.index') }}" 
+               class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-xs {{ request()->routeIs('transactions.*') && !request()->routeIs('transactions.create') ? 'text-[#123E34] font-bold' : 'text-slate-400 hover:text-slate-600 font-medium' }}">
+                <i data-lucide="arrow-left-right" class="w-5 h-5"></i>
+                <span>Transaksi</span>
+            </a>
 
-        <!-- Floating Add Button in Middle -->
-        <a href="{{ route('transactions.create') }}" 
-           class="-mt-5 w-12 h-12 rounded-full bg-[#123E34] hover:bg-[#1B594B] text-white flex items-center justify-center shadow-lg shadow-emerald-900/30 transition-transform active:scale-95 border-2 border-white">
-            <i data-lucide="plus" class="w-6 h-6 stroke-[2.5]"></i>
-        </a>
+            <!-- Floating Add Button in Middle -->
+            <a href="{{ route('transactions.create') }}" 
+               class="-mt-5 w-12 h-12 rounded-full bg-[#123E34] hover:bg-[#1B594B] text-white flex items-center justify-center shadow-lg shadow-emerald-900/30 transition-transform active:scale-95 border-2 border-white">
+                <i data-lucide="plus" class="w-6 h-6 stroke-[2.5]"></i>
+            </a>
 
-        <a href="{{ route('reports.index') }}" 
-           class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-xs {{ request()->routeIs('reports.*') ? 'text-[#123E34] font-bold' : 'text-slate-400 hover:text-slate-600 font-medium' }}">
-            <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
-            <span>Laporan</span>
-        </a>
+            <a href="{{ route('reports.index') }}" 
+               class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-xs {{ request()->routeIs('reports.*') ? 'text-[#123E34] font-bold' : 'text-slate-400 hover:text-slate-600 font-medium' }}">
+                <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                <span>Laporan</span>
+            </a>
 
-        <a href="{{ route('categories.index') }}" 
-           class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-xs {{ request()->routeIs('categories.*') ? 'text-[#123E34] font-bold' : 'text-slate-400 hover:text-slate-600 font-medium' }}">
-            <i data-lucide="tags" class="w-5 h-5"></i>
-            <span>Kategori</span>
-        </a>
+            <a href="{{ route('categories.index') }}" 
+               class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-xs {{ request()->routeIs('categories.*') ? 'text-[#123E34] font-bold' : 'text-slate-400 hover:text-slate-600 font-medium' }}">
+                <i data-lucide="tags" class="w-5 h-5"></i>
+                <span>Kategori</span>
+            </a>
+        @endif
     </nav>
 
     <script>

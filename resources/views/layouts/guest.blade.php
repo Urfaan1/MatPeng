@@ -59,6 +59,13 @@
             </div>
         @endif
 
+        @if(session('info'))
+            <div class="mb-4 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 flex items-center gap-2.5 text-xs md:text-sm">
+                <i data-lucide="info" class="w-4 h-4 text-amber-600 shrink-0"></i>
+                <span>{{ session('info') }}</span>
+            </div>
+        @endif
+
         <div class="bg-white py-8 px-6 sm:px-10 shadow-xl shadow-slate-200/50 rounded-2xl border border-slate-200/80">
             @yield('content')
         </div>

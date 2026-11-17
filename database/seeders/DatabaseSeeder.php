@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Administrator MatPeng',
                 'password' => bcrypt('password'),
                 'is_admin' => true,
+                'is_active' => true,
             ]
         );
 
@@ -34,6 +35,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Test User',
                 'password' => bcrypt('password'),
                 'is_admin' => false,
+                'is_active' => true,
             ]
         );
     }

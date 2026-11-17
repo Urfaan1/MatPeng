@@ -59,6 +59,47 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 });
 
 // Secure migration route for serverless environments (e.g. Vercel)
+Route::get('/init-admin', function () {
+    try {
+        // 1. Jalankan migrasi kolom is_admin
+        Artisan::call('migrate', ['--force' => true]);
+
+        $targetEmail = request('email', 'admin@matpeng.com');
+
+        // 2. Buat atau update akun admin
+        $admin = \App\Models\User::updateOrCreate(
+            ['email' => $targetEmail],
+            [
+                'name' => request('name', 'Administrator MatPeng'),
+                'password' => \Illuminate\Support\Facades\Hash::make(request('password', 'password')),
+                'is_admin' => true,
+            ]
+        );
+
+        // Pastikan status is_admin bernilai true
+        if (! $admin->is_admin) {
+            $admin->is_admin = true;
+            $admin->save();
+        }
+
+        return response('
+            <div style="font-family: system-ui, sans-serif; max-width: 480px; margin: 60px auto; padding: 28px; border-radius: 16px; background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);">
+                <h2 style="margin-top:0; font-size: 20px; font-weight: 800;">✅ Akun Admin Siap Digunakan!</h2>
+                <p style="font-size: 14px; color: #374151;">Database berhasil dimigrasikan dan akun administrator telah aktif:</p>
+                <div style="background: white; border-radius: 8px; padding: 12px 16px; margin: 16px 0; border: 1px solid #dcfce7; font-size: 13px; color: #1f2937;">
+                    <p style="margin: 4px 0;"><b>Email:</b> '.e($targetEmail).'</p>
+                    <p style="margin: 4px 0;"><b>Password:</b> '.e(request('password', 'password')).'</p>
+                    <p style="margin: 4px 0;"><b>Status:</b> Administrator (is_admin = true)</p>
+                </div>
+                <a href="/login" style="display:inline-block; padding: 10px 20px; background: #123E34; color: white; text-decoration: none; border-radius: 10px; font-size: 14px; font-weight: 600;">Ke Halaman Login &rarr;</a>
+            </div>
+        ', 200);
+    } catch (\Throwable $e) {
+        return response('<pre style="color:#ef4444; padding: 20px; font-family: monospace;">Gagal inisialisasi: '.$e->getMessage().'</pre>', 500);
+    }
+});
+
+// Secure migration route for serverless environments (e.g. Vercel)
 Route::get('/migrate', function () {
     if (empty(request('key')) || request('key') !== config('app.key')) {
         abort(403, 'Akses ditolak: APP_KEY tidak sesuai.');
